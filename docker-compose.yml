@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend_api:
+    build: .
+    container_name: bencinera_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      # Inyección segura de credenciales
+      - CNE_USER=je.urquiaga@duocuc.cl
+      - CNE_PASSWORD=Joder123#
+
+  frontend_dashboard:
+    image: python:3.11-slim
+    container_name: bencinera_dashboard
+    working_dir: /app
+    volumes:
+      - ./dashboards:/app/dashboards
+    command: >
+      sh -c "pip install streamlit pandas requests && 
+      streamlit run dashboards/app.py --server.port 8501 --server.address 0.0.0.0"
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend_api
